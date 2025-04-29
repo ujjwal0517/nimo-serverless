@@ -1,0 +1,44 @@
+service: nimo-backend
+frameworkVersion: '3'
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-2
+  environment:
+    DYNAMO_TABLE: CryptoSearchHistory
+    EMAIL_FROM: dhekeujju@gmail.com
+
+functions:
+  getCryptoPrice:
+    handler: src/getCryptoPrice.handler
+    memorySize: 128
+    timeout: 10
+    events:
+     - httpApi:
+        path: /crypto
+        method: post
+  
+  getSearchHistory:
+    handler: src/getSearchHistory.handler
+    memory: 128
+    timeout: 10
+    events:
+       - httpApi:
+          path: /history
+          method: get
+package: 
+individually: true
+
+resources:
+  Resources:
+    CryptoSearchHistory:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CryptoSearchHistory
+        AttributeDefinations:
+           - AttributeName: id
+             AttributeType: S
+        KeySchema:
+         - AttributeName: id
+           KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
