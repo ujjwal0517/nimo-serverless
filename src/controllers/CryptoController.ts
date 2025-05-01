@@ -27,7 +27,7 @@ export class CryptoController {
        };
 
     } catch (error) {
-        console.error(error);
+        console.error('error while fetching price', error);
         return {
             statusCode: 500,
             body: JSON.stringify({message: (error as Error).message || `Internal Server Error`})

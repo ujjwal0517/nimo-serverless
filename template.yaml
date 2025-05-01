@@ -7,12 +7,23 @@ Globals:
     Environment:
       Variables:
         DYNAMO_TABLE: CryptoSearchHistory
-        EMAIL_FROM: "your-ses-verified-email@example.com"
+        EMAIL_FROM: "dhekeujju@gmail.com"
 
 Resources:
-  GetCryptoPriceFunction:
+  ServerlessRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Stage
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+        MaxAge: "600"
+        AllowCredentials: false
+  GetCryptoPrice:
     Type: AWS::Serverless::Function
     Properties:
+      CodeUri: ./dist
       Handler: getCryptoPrice.handler
       Policies:
         - AmazonDynamoDBFullAccess
@@ -23,10 +34,12 @@ Resources:
           Properties:
             Path: /crypto
             Method: post
+            RestApiId: !Ref ServerlessRestApi
 
-  GetSearchHistoryFunction:
+  GetSearchHistory:
     Type: AWS::Serverless::Function
     Properties:
+      CodeUri: ./dist
       Handler: getSearchHistory.handler
       Policies:
         - AmazonDynamoDBReadOnlyAccess
@@ -34,8 +47,12 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /history
+            Path: /crypto/history
             Method: get
+            RestApiId: !Ref ServerlessRestApi
+
+  
+            
 
   CryptoSearchTable:
     Type: AWS::DynamoDB::Table
@@ -47,4 +64,9 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-      BillingMode: PAYPERREQUEST
+      BillingMode: PAY_PER_REQUEST
+
+Outputs:
+  ApiEndpoint:
+    Description: "Api endpoints"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Stage"
