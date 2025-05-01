@@ -24,7 +24,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./dist
-      Handler: getCryptoPrice.handler
+      Handler: app-getCryptoPrice.handler
       Policies:
         - AmazonDynamoDBFullAccess
         - AmazonSESFullAccess
@@ -40,7 +40,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./dist
-      Handler: getSearchHistory.handler
+      Handler: app-getSearchHistory.handler
       Policies:
         - AmazonDynamoDBReadOnlyAccess
       Events:

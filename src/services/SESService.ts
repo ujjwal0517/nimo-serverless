@@ -3,7 +3,14 @@ import { SendEmailCommand } from '@aws-sdk/client-ses';
 
 const emailFrom = process.env.EMAIL_FROM!;
 
-export class EmailService {
+export class SESService {
+
+  /**
+   * send email to provided mail
+   * @param to
+   * @param subject
+   * @param body
+   */
   async sendEmail(to: string, subject: string, body: string) {
     const command = new SendEmailCommand({
       Source: emailFrom,

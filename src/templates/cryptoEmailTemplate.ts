@@ -1,6 +1,6 @@
-export const generateEmailContent = (crypto: string, price: number) => {
+export const generateEmailContent = (cryptoName: string, price: number) => {
     return {
-        subject: `Crypto Price Alert: ${crypto}`,
-        body: `The current price of ${crypto} is $${price} usd.`
+        subject: `Crypto Price Alert: ${cryptoName}`,
+        body: `The current price of ${cryptoName} is $${price} usd.`
     }
 }

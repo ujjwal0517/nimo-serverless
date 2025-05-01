@@ -1,6 +1,6 @@
 export interface CryptoEntry {
     id: string;
-    crypto: string;
+    cryptoName: string;
     email: string;
     cryptoPrice: number;
     timestamp: string;

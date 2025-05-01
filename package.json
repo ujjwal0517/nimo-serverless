@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc && sam build",
+    "build": "esbuild src/app-*.ts --bundle --platform=node --target=node20 --outdir=dist && sam build",
     "deploy": "aws cloudformation delete-stack --stack-name NimoBackendStack --region ap-southeast-2 || true && sleep 10 && sam deploy --config-file samconfig.toml"
   },
   "keywords": [],
@@ -15,6 +15,7 @@
     "@types/aws-lambda": "^8.10.149",
     "@types/node": "^22.15.3",
     "@types/uuid": "^10.0.0",
+    "esbuild": "0.25.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
