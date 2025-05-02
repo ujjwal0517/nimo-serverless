@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "esbuild src/app-*.ts --bundle --platform=node --target=node20 --outdir=dist && sam build",
-    "deploy": "aws cloudformation delete-stack --stack-name NimoBackendStack --region ap-southeast-2 || true && sleep 10 && sam deploy --config-file samconfig.toml"
+    "deploy": "sam deploy --no-execute-changeset --config-file samconfig.toml"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +23,7 @@
     "@aws-sdk/client-dynamodb": "^3.799.0",
     "@aws-sdk/client-ses": "^3.798.0",
     "@aws-sdk/lib-dynamodb": "^3.799.0",
+    "axios": "^1.9.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "reflect-metadata": "^0.2.2",

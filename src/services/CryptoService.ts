@@ -4,6 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { DynamoDbService } from './DynamoDbService';
 import { SESService } from './SESService';
 import { CryptoSearchRequest } from '../requests/CryptoSearchRequest';
+import { BASE_URL } from '../constant/Crypto';
+import axios from 'axios';
+import { Logger } from '../utils/Logger';
 
 export class CryptoService {
     constructor(private emailService: SESService, private dynamoDbService: DynamoDbService) { }
@@ -17,26 +20,28 @@ export class CryptoService {
      * @returns {message: string, cryptoName: string, price: number}
      */
     async fetchAndSendCryptoPrice(cryptoName: string, email: string): Promise<{ message: string, cryptoName: string, price: number }> {
-        const apiUrl = `https://api.coingecko.com/api/v3/simple/price?names=${cryptoName}&vs_currencies=usd`;
-        const responseFromFetch = await fetch(apiUrl);
-        const cryptoInfo = await responseFromFetch.json();
-        const cryptoPrice = cryptoInfo[cryptoName]?.usd;
-
-        if (!cryptoPrice) {
-            throw new Error('Invalid Crypto currency name provided.')
+        try {
+            const cryptoInfo = await axios.get(`${BASE_URL}/simple/price`, { params: { names: cryptoName, vs_currencies: 'usd' } });
+            const cryptoPrice = cryptoInfo.data[cryptoName]?.usd;
+            Logger.debug(cryptoInfo.data[cryptoName])
+            if (!cryptoPrice) {
+                throw new Error('Invalid Crypto currency name provided.')
+            }
+            const emailContent = generateEmailContent(cryptoName, cryptoPrice);
+            await this.emailService.sendEmail(email, emailContent.subject, emailContent.body);
+            const prepareHistoryToSave: CryptoEntry = {
+                id: uuidv4(),
+                cryptoName,
+                email,
+                cryptoPrice,
+                timestamp: new Date().toISOString()
+            }
+            await this.dynamoDbService.save(prepareHistoryToSave);
+            return { message: `Price of the crypto currency sent successfully to ${email}`, cryptoName, price: cryptoPrice };
+        } catch (error) {
+            Logger.error('error while fetching crypto price', error)
+            throw error;
         }
-        const emailContent = generateEmailContent(cryptoName, cryptoPrice);
-        await this.emailService.sendEmail(email, emailContent.subject, emailContent.body);
-        const prepareHistoryToSave: CryptoEntry = {
-            id: uuidv4(),
-            cryptoName,
-            email,
-            cryptoPrice,
-            timestamp: new Date().toISOString()
-        }
-        await this.dynamoDbService.save(prepareHistoryToSave);
-        return { message: `Price of the crypto currency sent successfully to ${email}`, cryptoName, price: cryptoPrice };
-
     }
 
     /**
@@ -49,8 +54,8 @@ export class CryptoService {
         return {
             items: result.Items,
             nextPageToken: result.LastEvaluatedKey
-              ? encodeURIComponent(JSON.stringify(result.LastEvaluatedKey))
-              : null
-          } 
+                ? encodeURIComponent(JSON.stringify(result.LastEvaluatedKey))
+                : null
+        }
     }
 }

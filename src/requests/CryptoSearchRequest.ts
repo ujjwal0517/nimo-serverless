@@ -1,13 +1,13 @@
-import { Transform } from "class-transformer";
 import { IsInt, IsOptional, IsString } from "class-validator";
+import { Transform } from "class-transformer";
 
 export class CryptoSearchRequest {
-    @IsOptional()
-    @Transform(({ value }) => parseInt(value))
-    @IsInt({ message: 'limit must be an integer' })
-    limit?: number;
-  
-    @IsOptional()
-    @IsString({ message: 'lastKey must be a string' })
-    lastKey?: string;
+  @IsOptional()
+  @Transform(({ value }) => value !== undefined ? parseInt(value, 10) : undefined)
+  @IsInt()
+  limit?: number;
+
+  @IsOptional()
+  @IsString()
+  lastKey?: string;
 }

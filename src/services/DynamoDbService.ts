@@ -1,3 +1,4 @@
+import { Default_PAGINATION_LIMIT, PAGINATION_LIMIT_THRESHOLD } from '../constant/Crypto';
 import { CryptoSearchRequest } from '../requests/CryptoSearchRequest';
 import { DynamoClient } from '../utils/DynamoClient';
 import { PutCommand, PutCommandInput, PutCommandOutput, ScanCommand, ScanCommandInput, ScanCommandOutput } from '@aws-sdk/lib-dynamodb';
@@ -24,7 +25,8 @@ export class DynamoDbService {
    * @param pagination
    */
   async getAll(pagination?: CryptoSearchRequest): Promise<ScanCommandOutput> {
-    const { limit = 10, lastKey } = pagination || {};
+    const limit = (!pagination?.limit || pagination.limit > PAGINATION_LIMIT_THRESHOLD) ? Default_PAGINATION_LIMIT : pagination.limit;
+    const lastKey = pagination?.lastKey;
     const params: ScanCommandInput = {
       TableName: tableName,
       Limit: Number(limit)

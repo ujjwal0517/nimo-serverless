@@ -4,6 +4,8 @@ import { CryptoRequest } from '../requests/CryptoRequest';
 import { validate } from 'class-validator';
 import { CryptoService } from '../services/CryptoService';
 import { CryptoSearchRequest } from '../requests/CryptoSearchRequest';
+import { HttpStatus } from '../enum/HttpStatus';
+import { Logger } from '../utils/Logger';
 
 
 export class CryptoController {
@@ -21,21 +23,22 @@ export class CryptoController {
             const errors = await validate(dto);
 
             if (errors.length > 0) {
+                Logger.error('Validation Error', errors)
                 return {
-                    statusCode: 400,
+                    statusCode: HttpStatus.UNPROCESSED_ENTITY,
                     body: JSON.stringify({ message: 'Validation failed', errors }),
                 };
             }
-            const response = await this.cryptoService.fetchAndSendCryptoPrice(dto.crypto, dto.email);
+            const response = await this.cryptoService.fetchAndSendCryptoPrice(dto.cryptoName, dto.email);
             return {
-                statusCode: 200,
+                statusCode: HttpStatus.OK,
                 body: JSON.stringify(response)
             };
 
         } catch (error) {
-            console.error('error while fetching price', error);
+            Logger.error('error while fetching price', error);
             return {
-                statusCode: 500,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 body: JSON.stringify({ message: (error as Error).message || `Internal Server Error` })
             }
         }
@@ -51,25 +54,26 @@ export class CryptoController {
      */
     public async getSearchHistory(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
         try {
-            const queryParams = event.queryStringParameters as CryptoSearchRequest;
+            const queryParams = event.queryStringParameters as CryptoSearchRequest || {} ;
             const dto = plainToInstance(CryptoSearchRequest, queryParams);
-            const errors = await validate(dto);
-
-            if (errors.length > 0) {
-                return {
-                    statusCode: 400,
-                    body: JSON.stringify({ message: 'Validation failed', errors }),
-                };
+            if(Object.keys(dto).length !=0) {
+                const errors = await validate(dto);
+                if (errors.length > 0) {
+                    return {
+                        statusCode: HttpStatus.UNPROCESSED_ENTITY,
+                        body: JSON.stringify({ message: 'Validation failed', errors }),
+                    };
+                }
             }
             const result = await this.cryptoService.getSearchHistory(queryParams);
             return {
-                statusCode: 200,
+                statusCode: HttpStatus.OK,
                 body: JSON.stringify(result)
             }
         } catch (error) {
             console.error(error);
             return {
-                statusCode: 500,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 body: JSON.stringify({ message: (error as Error).message || 'Internal Server Error' })
             }
         }

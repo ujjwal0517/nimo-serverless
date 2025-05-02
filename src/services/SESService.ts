@@ -14,7 +14,7 @@ export class SESService {
   async sendEmail(to: string, subject: string, body: string) {
     const command = new SendEmailCommand({
       Source: emailFrom,
-      Destination: { ToAddresses: [process.env.EMAIL_FROM!] },
+      Destination: { ToAddresses: [to] },
       Message: {
         Subject: { Data: subject },
         Body: { Text: { Data: body } },
