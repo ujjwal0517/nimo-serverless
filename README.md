@@ -29,7 +29,7 @@ A serverless TypeScript-based AWS Lambda application that fetches cryptocurrency
 ## Setup
 
 ### 1. Clone and Install Dependencies
-npm install
+npm install / npm ci
 
 ### 2. Environment Variables
 EMAIL_FROM=your-verified-email@example.com
