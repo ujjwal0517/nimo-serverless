@@ -4,7 +4,11 @@ import { Transform } from 'class-transformer';
 
 export class CryptoRequest {
     @IsString()
-    @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
+    @Transform(({ value }) =>
+      typeof value === 'string' && value.trim().length > 0
+        ? value.trim().charAt(0).toUpperCase() + value.trim().slice(1)
+        : value
+    )
     @IsNotEmpty({ message: 'cryptoName should not be empty' })
     cryptoName!: string;
   
