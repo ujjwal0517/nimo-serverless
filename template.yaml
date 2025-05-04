@@ -18,8 +18,6 @@ Resources:
         AllowMethods: "'GET,POST,OPTIONS'"
         AllowHeaders: "'*'"
         AllowOrigin: "'*'"
-        MaxAge: "600"
-        AllowCredentials: false
   GetCryptoPrice:
     Type: AWS::Serverless::Function
     Properties:

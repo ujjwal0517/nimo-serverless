@@ -1,9 +1,9 @@
-import { Default_PAGINATION_LIMIT, PAGINATION_LIMIT_THRESHOLD } from '../constant/Crypto';
+import { Default_PAGINATION_LIMIT, DYNAMO_TABLE, PAGINATION_LIMIT_THRESHOLD } from '../constant/Crypto';
 import { CryptoSearchRequest } from '../requests/CryptoSearchRequest';
 import { DynamoClient } from '../utils/DynamoClient';
 import { PutCommand, PutCommandInput, PutCommandOutput, ScanCommand, ScanCommandInput, ScanCommandOutput } from '@aws-sdk/lib-dynamodb';
 
-const tableName = process.env.DYNAMO_TABLE!;
+const tableName = process.env.DYNAMO_TABLE || DYNAMO_TABLE;
 
 export class DynamoDbService {
   /**

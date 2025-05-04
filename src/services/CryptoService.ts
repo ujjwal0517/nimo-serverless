@@ -23,7 +23,7 @@ export class CryptoService {
         try {
             const cryptoInfo = await axios.get(`${BASE_URL}/simple/price`, { params: { names: cryptoName, vs_currencies: 'usd' } });
             const cryptoPrice = cryptoInfo.data[cryptoName]?.usd;
-            Logger.debug(cryptoInfo.data[cryptoName])
+            Logger.debug('CryptoName', cryptoInfo.data[cryptoName])
             if (!cryptoPrice) {
                 throw new Error('Invalid Crypto currency name provided.')
             }
@@ -49,7 +49,7 @@ export class CryptoService {
      * @param pagination  - object containing limit and lasKey parameter
      * @returns Paginated search history and next page start key
      */
-    async getSearchHistory(pagination: CryptoSearchRequest) {
+    async getSearchHistory(pagination?: CryptoSearchRequest) {
         const result = await this.dynamoDbService.getAll(pagination);
         return {
             items: result.Items,

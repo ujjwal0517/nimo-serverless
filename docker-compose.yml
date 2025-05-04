@@ -1,0 +1,9 @@
+version: '3.1'
+
+services:
+  dynamodb: 
+    image: amazon/dynamodb-local:latest
+    hostname: dynamodb-local
+    container_name: nimo-backend-dynamo
+    ports:
+      - 8000:8000
